@@ -1,8 +1,15 @@
 # AVBBS
 
-A very basic build system.
+A very basic build system that builds a directory of pakages.
 
-Builds a directory of packages. Supports validation, dependencies, multiple build steps and command variables.
+Features:
+
+* Package schemas
+* Dependencies
+* Multiple build steps and commands
+* Build process states
+* Command line variables
+* Remote archives
 
 ## Usage
 
