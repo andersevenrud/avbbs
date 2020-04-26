@@ -6,6 +6,7 @@
 
 const os = require('os')
 const { spawn } = require('child_process')
+const superagent = require('superagent')
 const { Validator } = require('jsonschema')
 
 /**
@@ -44,8 +45,21 @@ const spawnProcess = (cmd, args, options, cb = () => {}) =>
     cb(proc)
   })
 
+/**
+ * Fetches and extracts package sources
+ */
+const fetchArchive = async (source, destination) => {
+  const { body } = await superagent
+    .get(source)
+    .buffer(true)
+    .parse(superagent.parse.image)
+
+  return body
+}
+
 module.exports = {
   discoverArch,
   validateSchema,
-  spawnProcess
+  spawnProcess,
+  fetchArchive
 }

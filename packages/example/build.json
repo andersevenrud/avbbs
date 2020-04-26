@@ -20,7 +20,11 @@
       ],
       "build": [
         "echo 'build 1'",
-        "echo 'build 2'"
+        "echo 'build 2'",
+        "touch foo.bar"
+      ],
+      "install": [
+        "cp foo.bar $AVBBS_INSTALL_DIR/foo.bar"
       ]
     }
   }

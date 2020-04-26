@@ -9,6 +9,7 @@ const depresolve = require('node-resolve-dependency-graph/lib')
 const fs = require('fs-extra')
 const glob = require('fast-glob')
 const deepmerge = require('deepmerge')
+const templates = require('./templates')
 const { validateSchema } = require('./utils')
 
 /**
@@ -19,12 +20,13 @@ const PACKAGE_CONFIG = 'build.json'
 /**
  * Packge configuation filename
  */
-const PACKAGE_STATE = '.build-state.json'
+const PACKAGE_STATE = 'state.json'
 
 /**
  * Package configuration build steps
  */
 const PACKAGE_BUILD_STEPS = [
+  'fetch',
   'pre-configure',
   'configure',
   'post-configure',
@@ -57,23 +59,24 @@ const schema = {
   type: 'object',
   required: [
     'name',
-    'version',
-    'build'
+    'version'
   ],
   properties: {
     name: { type: 'string' },
     version: { type: 'string' },
-    template: { type: 'string' },
+    source: { type: 'string' },
+    template: {
+      type: 'string',
+      enum: Object.keys(templates)
+    },
     licenses: {
       type: 'array',
       items: { type: 'string' }
     },
     build: {
       type: 'object',
-      required: [
-        'commands'
-      ],
       properties: {
+        context: { type: 'string' },
         depends: {
           type: 'array',
           items: { type: 'string' }
@@ -114,6 +117,7 @@ const schema = {
  */
 const defaultObject = {
   build: {
+    context: '',
     depends: [],
     commands: Object.fromEntries(
       PACKAGE_BUILD_STEPS.map(step => [step, []])
@@ -133,7 +137,14 @@ const readPackage = async (dir) => {
     throw new PackageSchemaError(dir, result.errors)
   }
 
-  return deepmerge(defaultObject, json)
+  const config = deepmerge(defaultObject, json)
+
+  if (config.template) {
+    const template = templates[config.template]
+    return template.configure(dir, config)
+  }
+
+  return config
 }
 
 /**
@@ -162,14 +173,10 @@ const appendPackageState = async (dir, append) => {
 /**
  * Clears (removes package state file)
  */
-const clearPackageState = async (dir, remove = true) => {
+const clearPackageState = async (dir) => {
   const statePath = path.resolve(dir, PACKAGE_STATE)
 
-  if (remove) {
-    await fs.writeJSON(statePath, [])
-  } else if (await fs.exists(statePath)) {
-    await fs.remove(statePath)
-  }
+  await fs.remove(statePath)
 
   return []
 }
@@ -177,14 +184,14 @@ const clearPackageState = async (dir, remove = true) => {
 /**
  * Resolves the package dependency configuration tree
  */
-const resolvePackages = async (args) => {
-  const root = path.join(
-    path.resolve(args.root),
+const resolvePackages = async (root) => {
+  const globstr = path.join(
+    path.resolve(root),
     '**',
     PACKAGE_CONFIG
   )
 
-  const packages = (await glob(root)).map(dir => path.dirname(dir))
+  const packages = (await glob(globstr)).map(dir => path.dirname(dir))
   const configs = await Promise.all(packages.map(readPackage))
 
   const deptree = Object.fromEntries(configs.map(config => [

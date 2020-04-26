@@ -7,7 +7,7 @@
   "build": {
     "commands": {
       "prepare": [
-        "echo $BUILD_ARCH",
+        "echo $AVBBS_ARCH",
         "echo x FOO=foo"
       ],
       "configure": [

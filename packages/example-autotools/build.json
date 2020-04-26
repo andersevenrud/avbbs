@@ -1,0 +1,18 @@
+{
+  "name": "example-autotools",
+  "version": "5.0",
+  "template": "autotools",
+  "source": "https://ftp.gnu.org/gnu/bash/bash-${version}.tar.gz",
+  "licenses": [
+    "MIT"
+  ],
+  "build": {
+    "context": "bash-${version}"
+  },
+  "autoconf": {
+    "flags": [
+      "--with-curses",
+      "--enable-readline"
+    ]
+  }
+}

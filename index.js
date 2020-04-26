@@ -13,7 +13,8 @@ const { runBuild } = require('./src/builder')
  */
 const main = (args, options, logger) => {
   const globals = {
-    BUILD_ARCH: options.arch,
+    AVBBS_ARCH: options.arch,
+    AVBBS_PLATFORM: options.platform
   }
 
   return runBuild({
@@ -28,8 +29,10 @@ caporal
   .version('0.0.1')
   .argument('<root>', 'Packages root path')
   .option('--arch <arch>', 'Target architecture', /[\w_]+/, discoverArch())
-  .option('--dest <destination>', 'Destination installation path', undefined, '/tmp/build')
-  .option('--clear', 'Clears package states before build', caporal.BOOL)
+  .option('--platform <platform>', 'Target platform', /[\w-]+/, 'pc')
+  .option('--dest <destination>', 'Destination workspace', undefined, '/tmp/avbbs')
+  .option('--clean', 'Always build freshly', caporal.BOOL)
+  .option('--clean-all', 'Deletes all files workspace', caporal.BOOL)
   .action(main)
 
 caporal.parse(process.argv)
