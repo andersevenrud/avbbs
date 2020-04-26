@@ -1,0 +1,23 @@
+{
+  "name": "example-dep",
+  "version": "1.0.0",
+  "licenses": [
+    "MIT"
+  ],
+  "build": {
+    "commands": {
+      "prepare": [
+        "echo $BUILD_ARCH",
+        "echo x FOO=foo"
+      ],
+      "configure": [
+        "echo 'dep configure 1'",
+        "echo 'dep configure 2'"
+      ],
+      "build": [
+        "echo 'dep build 1'",
+        "echo 'dep build 2'"
+      ]
+    }
+  }
+}

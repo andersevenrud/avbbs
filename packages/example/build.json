@@ -1,0 +1,27 @@
+{
+  "name": "example",
+  "version": "1.0.0",
+  "licenses": [
+    "MIT"
+  ],
+  "build": {
+    "depends": [
+      "example-dep"
+    ],
+    "commands": {
+      "configure": [
+        {
+          "command": "echo 'configure 1'",
+          "env": {
+            "deptest": "dep-test"
+          }
+        },
+        "echo 'configure 2' $deptest"
+      ],
+      "build": [
+        "echo 'build 1'",
+        "echo 'build 2'"
+      ]
+    }
+  }
+}
