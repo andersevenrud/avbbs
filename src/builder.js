@@ -176,13 +176,13 @@ const runBuild = async ({
   logger,
   globals
 }) => {
-  const installdir = path.resolve(options.dest, 'install')
+  const installdir = path.resolve(options.install)
   const { resolved, configs } = await resolvePackages(args.root)
 
   const promises = resolved.map(str => async () => {
     const cwd = path.resolve(args.root, str)
     const config = configs.find(cfg => cfg.name === str)
-    const ctxdir = path.resolve(options.dest, config.name)
+    const ctxdir = path.resolve(options.workspace, config.name)
     const builddir = path.resolve(ctxdir, 'build')
     const realbuilddir = path.resolve(
       builddir,
@@ -226,7 +226,7 @@ const runBuild = async ({
 
   try {
     if (options.cleanAll) {
-      await fs.emptyDir(path.resolve(options.dest))
+      await fs.emptyDir(path.resolve(options.workspace))
     }
 
     await fs.ensureDir(installdir)
